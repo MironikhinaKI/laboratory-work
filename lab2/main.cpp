@@ -15,61 +15,64 @@ void fillMatrix(vector<vector<int>>& matr, int stroka, int stolb) {
     }
 }
 
-void vivod(vector<vector<int>>& matr, int stroka, int stolb) {
-    for (int i = 0; i < stroka; i++) {
-        for (int j = 0; j < stolb; j++) {
-            cout << matr[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-int main() {
+int main(int argc, char* argv[]) {
     setlocale(LC_ALL, "Russian");
     srand(time(0));
     
-    int A_m, A_n, B_n, B_k, n;
-    
-    //Задание размеров, проверка условия
-    cout << "Введите количество строк и столбцов матрицы А через пробел: ";
-    cin >> A_m >> A_n;
-    cout << "Введите количество строк и столбцов матрицы B через пробел: ";
-    cin >> B_n >> B_k;
-    if (A_n != B_n) {
-        cout << "Ошибка! Кол-во столбцов матрицы А не совпадает с кол-вом строк матрицы В.";
-        return 0;
+    // Проверка аргументов
+    if (argc < 4) {
+        cout << "Использование: " << argv[0] << " <rowsA> <n> <colsB>" << endl;
+        cout << "Пример: task4.exe 1000 500 1000" << endl;
+        cout << "  rowsA — число строк матрицы A" << endl;
+        cout << "  n     — общее измерение (столбцы A = строки B)" << endl;
+        cout << "  colsB — число столбцов матрицы B" << endl;
+        return 1;
     }
-    n = A_n; //для удобства столбцы А и строки В одной переменной
+
+    int rowsA = atoi(argv[1]);
+    int n     = atoi(argv[2]);
+    int colsB = atoi(argv[3]);
+
+    if (rowsA <= 0 || n <= 0 || colsB <= 0) {
+        cout << "Ошибка: все размеры должны быть положительными!" << endl;
+        return 1;
+    }
 
     //Создание векторов
-    vector<vector<int>> A(A_m, vector<int>(n));
-    vector<vector<int>> B(n, vector<int>(B_k));
-    vector<vector<int>> C(A_m, vector<int>(B_k));
-    fillMatrix(A, A_m, n);
-    //vivod(A, A_m, n);
-    fillMatrix(B,n, B_k);
-    //vivod(B, n, B_k);
+    vector<vector<int>> matrixA(rowsA, vector<int>(n));
+    vector<vector<int>> matrixB(n, vector<int>(colsB));
+    vector<vector<int>> matrixC(rowsA, vector<int>(colsB));
 
-    for (int count : {1, 2, 4, 8}) {
-        omp_set_num_threads(count);
+    fillMatrix(matrixA, rowsA, n);
+    fillMatrix(matrixB, n, colsB);
 
-        double start = omp_get_wtime();
+    for (int numThreads : {1, 2, 4, 8}) {
+        omp_set_num_threads(numThreads);
+
+        // Обнуление результата перед каждым запуском
+        for (int i = 0; i < rowsA; i++)
+            for (int j = 0; j < colsB; j++)
+                matrixC[i][j] = 0;
+
+        double startTime = omp_get_wtime();
 
         #pragma omp parallel for schedule(static)
-        for (int m = 0; m < A_m; m++) {
-            for (int k = 0; k < B_k; k++) {
-                int sumi = 0;
-                for (int no = 0; no < n; no++) {
-                    sumi += (A[m][no] * B[no][k]);
+        for (int i = 0; i < rowsA; i++) {
+            for (int j = 0; j < colsB; j++) {
+                int sum = 0;
+                for (int k = 0; k < n; k++) {
+                    sum += (matrixA[i][k] * matrixB[k][j]);
                 }
-                C[m][k] = sumi;
+                matrixC[i][j] = sum;
             }
         }
 
-        double end = omp_get_wtime();
-        cout << "Потоков: " << count << ", время: " << end - start << " сек" << endl;
-    }
+        double endTime = omp_get_wtime();
 
+        cout << "Потоков: " << numThreads
+             << ", время: " << endTime - startTime << " сек" << endl;
+    }
 
     return 0;
 }
+
