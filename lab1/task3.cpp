@@ -1,10 +1,25 @@
 #include <iostream>
 #include <omp.h>
+#include <cstdlib>
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
     setlocale(LC_ALL, "Russian");
-    omp_set_num_threads(8);
+
+    if (argc < 2) {
+        cout << "Использование: " << argv[0] << " <число_потоков>" << endl;
+        cout << "Пример: task3.exe 8" << endl;
+        return 1;
+    }
+
+    int num_threads = atoi(argv[1]);
+
+    if (num_threads <= 0) {
+        cout << "Ошибка: число потоков должно быть положительным!" << endl;
+        return 1;
+    }
+    
+    omp_set_num_threads(num_threads);
     int all = omp_get_max_threads();
 
 ////////// 1 способ
@@ -21,7 +36,7 @@ int main() {
 
 ////////// 2 способ
 
-    int ids[8];
+    int* ids = new int[all];
     #pragma omp parallel
     {
         int id = omp_get_thread_num();
@@ -31,6 +46,7 @@ int main() {
     for (int i = all - 1; i >= 0; i--) {
         cout << "Поток " << ids[i] << " из " << all << endl;
     }
+    delete[] ids;
 
 ////////// 3 способ
 
