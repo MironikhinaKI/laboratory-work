@@ -43,24 +43,25 @@ int main() {
     fillMatrix(matrixA, rowsA, n);
     fillMatrix(matrixB, n, colsB);
 
-    cout << "\n=== Результаты ===" << endl;
+    cout << "\n=== schedule(static) ===" << endl;
 
+    // Перебор числа потоков
     for (int numThreads : {1, 2, 4, 8}) {
         omp_set_num_threads(numThreads);
 
-        // Обнуление результата перед каждым запуском
+        // Обнуление C перед каждым запуском
         for (int i = 0; i < rowsA; i++)
             for (int j = 0; j < colsB; j++)
                 matrixC[i][j] = 0;
 
         double startTime = omp_get_wtime();
 
-        #pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
         for (int i = 0; i < rowsA; i++) {
             for (int j = 0; j < colsB; j++) {
                 int sum = 0;
                 for (int k = 0; k < n; k++) {
-                    sum += (matrixA[i][k] * matrixB[k][j]);
+                    sum += matrixA[i][k] * matrixB[k][j];
                 }
                 matrixC[i][j] = sum;
             }
@@ -69,7 +70,7 @@ int main() {
         double endTime = omp_get_wtime();
 
         cout << "Потоков: " << numThreads
-             << ", время: " << endTime - startTime << " сек" << endl;
+            << ", время: " << endTime - startTime << " сек" << endl;
     }
 
     return 0;
