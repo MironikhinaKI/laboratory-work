@@ -2,7 +2,7 @@
 
 ## Геометрический центр (формула (Σx + Σy + Σz) / 3N)
 
-### Сборка
+### Сборка (g++)
 ```
 g++ task6.cpp -o task6 -fopenmp
 ```
@@ -11,19 +11,19 @@ g++ task6.cpp -o task6 -fopenmp
 Генератор `generator.cpp` находится в папке `lab3`:
 ```
 cd ../lab3
-g++ generator.cpp -o generator
-generator.exe crd_big.txt 1000000
+g++ generator.cpp -o generator -fopenmp
+generator.exe
 cd ../lab4
 ```
+Программа `generator.exe` запрашивает число точек (например, `1000000`) и создаёт файл `crd_big.txt`.
 
 ### Запуск
 ```
-task6.exe <файл> <число_потоков>
+task6.exe
 ```
-Пример:
-```
-task6.exe ../lab3/crd_big.txt 4
-```
+Программа запрашивает число потоков (например, `4`).
+
+Читает файл `crd_big.txt` из текущей папки.
 
 ### Формат файла
 Каждая строка — три числа (x, y, z):
