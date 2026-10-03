@@ -2,33 +2,30 @@
 #include <iostream>
 #include <omp.h>
 #include <vector>
-#include <cstdlib>
+#include <windows.h>
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main() {
+    SetConsoleOutputCP(1251);
+    SetConsoleCP(1251);
     setlocale(LC_ALL, "Russian");
 
-    // Проверка аргументов
-    if (argc < 3) {
-        cout << "Использование: " << argv[0] << " <файл> <число_потоков>" << endl;
-        cout << "Пример: task6.exe crd_big.txt 4" << endl;
-        return 1;
-    }
-
-    string filename = argv[1];
-    int numThreads  = atoi(argv[2]);
+    int numThreads;
+    cout << "Введите количество потоков: ";
+    cin >> numThreads;
 
     if (numThreads <= 0) {
         cout << "Ошибка: число потоков должно быть положительным!" << endl;
         return 1;
     }
 
+    // ===== ЧТЕНИЕ ФАЙЛА =====
     vector<double> Vx, Vy, Vz;
     double x, y, z;
 
-    ifstream in(filename);
+    ifstream in("crd_big.txt");
     if (!in.is_open()) {
-        cout << "Файл не открылся: " << filename << endl;
+        cout << "Файл не открылся: crd_big.txt" << endl;
         return 1;
     }
 
@@ -42,6 +39,9 @@ int main(int argc, char* argv[]) {
     int N = Vx.size();
     cout << "Прочитано точек: " << N << endl << endl;
 
+    // ============================================
+    // ЗАДАЧА 6: functional decomposition + critical
+    // ============================================
     double global_sum = 0;
     omp_set_num_threads(numThreads);
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
     double end = omp_get_wtime();
 
     double result = global_sum / (3.0 * N);
-    cout << "Результат: " << result << endl;
+    cout << "Результат (Σx+Σy+Σz)/3N: " << result << endl;
     cout << "Время: " << end - start << " сек" << endl;
 
     return 0;
