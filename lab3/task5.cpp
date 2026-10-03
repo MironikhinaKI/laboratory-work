@@ -48,7 +48,7 @@ int main() {
 
     double start1 = omp_get_wtime();
 
-    #pragma omp parallel for reduction(+:sumi_x, sumi_y, sumi_z)
+#pragma omp parallel for reduction(+:sumi_x, sumi_y, sumi_z)
     for (int i = 0; i < N; i++) {
         sumi_x += Vx[i];
         sumi_y += Vy[i];
@@ -69,19 +69,19 @@ int main() {
 
     double start2 = omp_get_wtime();
 
-    #pragma omp parallel sections
+#pragma omp parallel sections
     {
-        #pragma omp section
+#pragma omp section
         {
             for (int i = 0; i < N; i++) sumi_x += Vx[i];
         }
 
-        #pragma omp section
+#pragma omp section
         {
             for (int i = 0; i < N; i++) sumi_y += Vy[i];
         }
 
-        #pragma omp section
+#pragma omp section
         {
             for (int i = 0; i < N; i++) sumi_z += Vz[i];
         }
