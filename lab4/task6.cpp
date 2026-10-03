@@ -77,7 +77,9 @@ int main() {
     double end = omp_get_wtime();
 
     double result = global_sum / (3.0 * N);
-    cout << "Результат (Σx+Σy+Σz)/3N: " << result << endl;
+
+    cout << "=== Задача 6 (sections + critical) ===" << endl;
+    cout << "Результат: " << result << endl;
     cout << "Время: " << end - start << " сек" << endl;
 
     return 0;
