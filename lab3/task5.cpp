@@ -2,21 +2,17 @@
 #include <iostream>
 #include <omp.h>
 #include <vector>
-#include <cstdlib>
+#include <windows.h>
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main() {
+    SetConsoleOutputCP(1251);
+    SetConsoleCP(1251);
     setlocale(LC_ALL, "Russian");
 
-    // проверка аргументов
-    if (argc < 3) {
-        cout << "Использование: " << argv[0] << " <файл> <число_потоков>" << endl;
-        cout << "Пример: task5.exe crd_big.txt 4" << endl;
-        return 1;
-    }
-
-    string filename = argv[1];
-    int numThreads  = atoi(argv[2]);
+    int numThreads;
+    cout << "Введите количество потоков: ";
+    cin >> numThreads;
 
     if (numThreads <= 0) {
         cout << "Ошибка: число потоков должно быть положительным!" << endl;
@@ -27,9 +23,9 @@ int main(int argc, char* argv[]) {
     vector<double> Vx, Vy, Vz;
     double x, y, z;
 
-    ifstream in(filename);
+    ifstream in("crd_big.txt");
     if (!in.is_open()) {
-        cout << "Файл не открылся: " << filename << endl;
+        cout << "Файл не открылся: crd_big.txt" << endl;
         return 1;
     }
 
@@ -45,7 +41,9 @@ int main(int argc, char* argv[]) {
 
     double sumi_x = 0, sumi_y = 0, sumi_z = 0;
 
-    // parallel for + reduction
+    // ============================================
+    // ВЕРСИЯ 1: parallel for + reduction
+    // ============================================
     omp_set_num_threads(numThreads);
 
     double start1 = omp_get_wtime();
@@ -63,7 +61,9 @@ int main(int argc, char* argv[]) {
     cout << "Центр: " << sumi_x / N << " " << sumi_y / N << " " << sumi_z / N << endl;
     cout << "Время: " << end1 - start1 << " сек" << endl << endl;
 
-    // parallel sections
+    // ============================================
+    // ВЕРСИЯ 2: parallel sections
+    // ============================================
     sumi_x = 0; sumi_y = 0; sumi_z = 0;
     omp_set_num_threads(numThreads);
 
