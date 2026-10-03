@@ -3,48 +3,47 @@
 #include <cstdlib>
 #include <ctime>
 #include <omp.h>
-#include <string>
+#include <windows.h>
 using namespace std;
 
-//Заполнение матрицы 
-void fillMatrix(vector<vector<int>>& matr, int stroka, int stolb) {
-    for (int i = 0; i < stroka; i++) {
-        for (int j = 0; j < stolb; j++) {
-            matr[i][j] = rand()%10;
+// Заполнение матрицы случайными числами
+void fillMatrix(vector<vector<int>>& matrix, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            matrix[i][j] = rand() % 10;
         }
     }
 }
 
-int main(int argc, char* argv[]) {
+int main() {
+    SetConsoleOutputCP(1251);
+    SetConsoleCP(1251);
     setlocale(LC_ALL, "Russian");
     srand(time(0));
-    
-    // Проверка аргументов
-    if (argc < 4) {
-        cout << "Использование: " << argv[0] << " <rowsA> <n> <colsB>" << endl;
-        cout << "Пример: task4.exe 1000 500 1000" << endl;
-        cout << "  rowsA — число строк матрицы A" << endl;
-        cout << "  n     — общее измерение (столбцы A = строки B)" << endl;
-        cout << "  colsB — число столбцов матрицы B" << endl;
-        return 1;
-    }
 
-    int rowsA = atoi(argv[1]);
-    int n     = atoi(argv[2]);
-    int colsB = atoi(argv[3]);
+    int rowsA, n, colsB;
+
+    cout << "Введите число строк матрицы A: ";
+    cin >> rowsA;
+    cout << "Введите общее измерение (столбцы A = строки B): ";
+    cin >> n;
+    cout << "Введите число столбцов матрицы B: ";
+    cin >> colsB;
 
     if (rowsA <= 0 || n <= 0 || colsB <= 0) {
         cout << "Ошибка: все размеры должны быть положительными!" << endl;
         return 1;
     }
 
-    //Создание векторов
+    // Создание матриц
     vector<vector<int>> matrixA(rowsA, vector<int>(n));
     vector<vector<int>> matrixB(n, vector<int>(colsB));
     vector<vector<int>> matrixC(rowsA, vector<int>(colsB));
 
     fillMatrix(matrixA, rowsA, n);
     fillMatrix(matrixB, n, colsB);
+
+    cout << "\n=== Результаты ===" << endl;
 
     for (int numThreads : {1, 2, 4, 8}) {
         omp_set_num_threads(numThreads);
@@ -75,4 +74,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
