@@ -2,30 +2,27 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <windows.h>
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main() {
+    SetConsoleOutputCP(1251);
+    SetConsoleCP(1251);
     setlocale(LC_ALL, "Russian");
+    srand(time(0));
 
-    if (argc < 3) {
-        cout << "Использование: " << argv[0] << " <файл> <число_точек>" << endl;
-        cout << "Пример: generator.exe crd_big.txt 1000000" << endl;
-        return 1;
-    }
-
-    string filename = argv[1];
-    int count = atoi(argv[2]);
+    int count;
+    cout << "Введите количество точек: ";
+    cin >> count;
 
     if (count <= 0) {
         cout << "Ошибка: число точек должно быть положительным!" << endl;
         return 1;
     }
 
-    srand(time(0));
-
-    ofstream out(filename);
+    ofstream out("crd_big.txt");
     if (!out.is_open()) {
-        cout << "Не удалось создать файл: " << filename << endl;
+        cout << "Не удалось создать файл: crd_big.txt" << endl;
         return 1;
     }
 
@@ -37,7 +34,7 @@ int main(int argc, char* argv[]) {
     }
 
     out.close();
-    cout << "Готово: " << count << " точек записано в " << filename << endl;
+    cout << "Готово: " << count << " точек записано в crd_big.txt" << endl;
 
     return 0;
 }
